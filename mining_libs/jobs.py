@@ -4,6 +4,15 @@ from stratum import settings
 import stratum.logger
 log = stratum.logger.get_logger('proxy')
 
+def formatHashrate(hashrate):
+    units = ['H', 'KH', 'MH', 'GH', 'TH', 'PH']
+    diff_int = int((2**256)//int(str(hashrate), base=16)) #int(str(newjob.params[2]), base=16)
+    i = 0
+    while (diff_int > 1000):
+        diff_int = diff_int / 1000
+        i+=1
+    return "%s %s" % (diff_int, units[i])
+
 class Job(object):
     def __init__(self):
         self.params = ''
@@ -55,8 +64,7 @@ class JobRegistry(object):
                 pool_number = 3
 
         if is_main_pool:
-            a = (2**256)//int(str(newjob.params[2]), base=16)
-            log_text = "NEW_JOB MAIN_POOL %s DIFF %s " % newjob.params[0][:18]
+            log_text = "NEW_JOB MAIN_POOL %s DIFF %s " % (newjob.params[0][:18], formatHashrate(newjob.params[2]))
         else:
             log_text = "NEW_JOB FAILOVER_POOL%s %s" % pool_number, newjob.params[0][:18]
 
